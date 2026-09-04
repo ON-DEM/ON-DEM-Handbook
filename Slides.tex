@@ -1,0 +1,79 @@
+\documentclass[11pt, aspectratio=169]{beamer}
+\input{Headers.tex}
+
+% --- Theme and Color Setup ---
+\usetheme{Madrid}
+\usecolortheme{default}
+
+% Define custom ON-DEM colors (Deep Professional Blue with warm accent)
+\definecolor{ONDEMblue}{RGB}{0, 75, 135} 
+\definecolor{ONDEMaccent}{RGB}{200, 50, 50} 
+
+\setbeamercolor{palette primary}{bg=ONDEMblue, fg=white}
+\setbeamercolor{palette secondary}{bg=ONDEMblue!85, fg=white}
+\setbeamercolor{palette tertiary}{bg=ONDEMblue!70, fg=white}
+\setbeamercolor{title}{bg=ONDEMblue, fg=white}
+\setbeamercolor{frametitle}{bg=ONDEMblue, fg=white}
+\setbeamercolor{itemize item}{fg=ONDEMaccent}
+\setbeamercolor{itemize subitem}{fg=ONDEMaccent}
+\setbeamercolor{alerted text}{fg=ONDEMaccent}
+
+% Remove navigation symbols for a cleaner look
+\setbeamertemplate{navigation symbols}{}
+
+% --- Title Page Information ---
+\title[ON-DEM Handbook]{ON-DEM Handbook Slide Deck}
+\subtitle{COST Action CA22132: Open Network on DEM Simulations}
+\author[A. Thornton]{Anthony Thornton}
+\institute[ON-DEM]{Open Network on Discrete Element Method Simulations}
+\date{\today}
+
+% --- Logos ---
+\titlegraphic{
+    \vspace{0.3cm}
+    \centering
+    \makebox[4cm][r]{\includegraphics[height=1.2cm]{Images/Logos/Cost.pdf}}%
+    \hspace{0.75cm}%
+    \makebox[2cm][c]{\includegraphics[height=1.2cm]{Images/Logos/ON-DEM.png}}%
+    \hspace{0.75cm}%
+    \makebox[4cm][l]{\includegraphics[height=1.2cm]{Images/Logos/EU.png}}
+}
+% Map the book chapter to presentation parts
+\providecommand{\chapter}[1]{\part{#1}}
+
+%Setup the table of contents pages
+% --- Automated Part (Chapter) Slides ---
+\AtBeginPart{
+    \begin{frame}
+        \partpage
+    \end{frame}
+}
+
+% --- Automated Section Slides ---
+\AtBeginSection[]{
+    \begin{frame}{\insertsectionhead}
+        % Highlights the current section and hides subsections of other sections
+        \tableofcontents[currentsection, hideothersubsections]
+    \end{frame}
+}
+
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{Table of Contents}
+    \tableofcontents[hideallsubsections]
+\end{frame}
+
+\input{Chapters/CFDCoupling.tex}
+\input{Chapters/Benchmarks.tex}
+
+\begin{frame}[allowframebreaks]{References}
+    \bibliographystyle{unsrt} 
+    \bibliography{Bib} 
+\end{frame}
+
+\end{document}

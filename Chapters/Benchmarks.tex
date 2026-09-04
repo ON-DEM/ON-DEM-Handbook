@@ -1,0 +1,115 @@
+\chapter{Benchmarks}
+\section{CFD-DEM}
+\subsection{Alternative Benchmarks}
+
+\only<article>{
+The benchmarks in the section where discussion as possible CFD-DEM benchmarks but are currently not being actively considered as official ON-DEM benchmarks. 
+
+}
+
+\begin{frame}
+\frametitle{Granular Rayleigh-Taylor Instability Benchmark}
+\framesubtitle{Status: On Hold}
+
+    \textbf{Benchmark Objective}
+    \begin{itemize}
+        \item The primary aim is to recover the results from section 7 of \cite{robinson2014fluid}.
+        \item It is treated as a pure benchmark against the Robinson data rather than a validation case, as it is unclear why the system should strictly follow the Rayleigh-Taylor instability.
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{Physical Setup \& Methodology}
+    \begin{itemize}
+        \item The simulation involves a set of granular materials arranged on a grid falling into a fluid.
+        \item A perturbation is applied to the initial particle positions.
+        \item The growth on this interface is then analysed as a function of the perturbation's wave number.
+    \end{itemize}
+    
+    \vspace{0.3cm}
+    \alert{Problem: The accuracy of the original data cannot be verified.} 
+\end{frame}
+\begin{frame}
+\frametitle{Sedimentation of a Constant Porosity Block Benchmark}
+\framesubtitle{Status: On Hold}
+
+    \textbf{Benchmark Objective}
+    \begin{itemize}
+        \item The primary target is to recover the analytical solution presented in equation (36) from section 5 of \cite{robinson2014fluid}. 
+        \item This case is strictly classified as a verification benchmark. 
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{Physical Setup \& Methodology}
+    \begin{itemize}
+        \item The simulation models a porous block of granular materials falling within a container. 
+        \item It serves as a natural extension of a single spherical particle falling in a fluid under a gravitational field, but importantly includes fluid back flow. 
+        \item There is a known theoretical, analytic solution for the terminal velocity of the particle for a given applied drag model. 
+        \end{itemize}
+    
+    \end{frame}
+    
+    \begin{frame}
+\frametitle{Segregation in a Fluid-Saturated Rotating Drum Benchmark}
+\framesubtitle{Status: On Hold}
+
+    \textbf{Benchmark Objective}
+    \begin{itemize}
+        \item The target is to validate the numerical codes against experimental data of segregation profiles. 
+        \item Unlike the previous cases, this is strictly classified as a validation benchmark. 
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{Physical Setup \& Methodology}
+    \begin{itemize}
+        \item The setup considers two different sizes of glass beads inside a rotating drum filled with a viscous liquid. 
+        \item The goal is to analyse the segregation profile as a function of drum RPM, fluid density, and fluid viscosity. 
+         \end{itemize}
+    
+
+    
+    \vspace{0.3cm}
+    \alert{Problem: The original experimental paper was never published and the data is missing, though the experimental setup still exists to recreate it.} 
+\end{frame}
+
+\section{Industrial Benchmarks}
+\begin{frame}
+\frametitle{Industrial Challenge: Powder Dosing (Double Screw Feeder)}
+\framesubtitle{Status: Active}
+
+    \textbf{Challenge Objective}
+    \begin{itemize}
+        \item This is an active challenge aimed at evaluating \lq blind\rq\ DEM simulations against experimental results of the dosing process. 
+        \item The overarching goal is to enhance precise material delivery while optimising consistency and reducing errors. 
+        \item Key comparison parameters include achieved mixing indices (e.g., coefficient of blending performance), segregation amounts, and the effects of agitator and screw rotational speeds. 
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \textbf{Industrial Partnership \& Data}
+    \begin{itemize}
+        \item The industrial partner, Bayer, is providing two materials alongside relevant material characterisation and laboratory-scale data.
+        \item The provided lab data includes starting mass, filling level, rotational screw and agitator speeds, and dosing time. 
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Powder Dosing Challenge: Setup \& Implementation}
+\framesubtitle{Status: Active}
+
+    \textbf{Simulation Setup \& Flexibility}
+    \begin{itemize}
+        \item Participants must calibrate their chosen contact models using the provided material data. 
+        \item Because the process involves fine and cohesive particles, participants have the flexibility to choose appropriate contact laws (e.g., Hertzian/Linear elastic with JKR or DMT for adhesion).
+    \end{itemize}
+
+    \textbf{Material Properties \& Availability}
+    \begin{itemize}
+        \item The measured probability density functions (PDFs) of the materials are provided, alongside literature data for paracetamol (e.g., density of 1200 $\text{kg/m}^3$) for guidance. 
+        \item Full descriptions of the experiments, equipment geometry, and datasets are hosted on Zenodo \href{[https://zenodo.org/records/18588605](https://zenodo.org/records/18588605)}{Record 18588605}.
+    \end{itemize}
+    
+    \textbf{Participating Codes \& Leads}
+    \begin{itemize}
+        \item \textbf{MercuryDPM:} \alert{Holger Götz.}
+        \item \alert{Note: Every benchmark requires at least two different DEM codes, so additional collaborators are needed.} 
+    \end{itemize}
+\end{frame}
