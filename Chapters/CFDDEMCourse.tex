@@ -1,4 +1,4 @@
-\chapter[CFD--DEM coupling with preCICE]{A bottom-up introduction to CFD-DEM coupling with preCICE}
+\chapter[Open-source CFD--DEM with preCICE]{An Introduction to Open-Source CFD--DEM Simulations with preCICE}
 
 This course develops a coupled CFD-DEM simulation one component at a
 time. All three cases use MercuryDPM for the particles. We first
@@ -66,13 +66,13 @@ path on your machine. Do not change the derived paths, and use the same
 values in all three cases:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 export COURSE_ROOT="/absolute/path/to/cfd-dem-course"
 export SETUPS_ROOT="$COURSE_ROOT/experimental-setups"
-export PRECICE_ROOT="$COURSE_ROOT/software/precice-install"
+export PRECICE_INSTALL_DIR="$COURSE_ROOT/software/precice-install"
 export MERCURYDPM_BUILD_DIR="$COURSE_ROOT/software/mercurydpm-dev/build"
 cd "$COURSE_ROOT/software"
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 All commands in this build step are executed in the terminal in which
@@ -82,10 +82,10 @@ explicitly.
 Install the common build dependencies on Ubuntu:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 sudo apt install build-essential cmake libboost-all-dev libeigen3-dev libxml2-dev \
   libopenmpi-dev openmpi-bin pkg-config python3-venv
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 For other operating systems and installation methods, consult the
@@ -99,7 +99,7 @@ guide} explains the CMake options in more detail.
 Extract and install the bundled preCICE source:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 cd "$COURSE_ROOT/software"
 tar -xzf precice-v3.4.1.tar.gz
 cd precice-v3.4.1
@@ -107,7 +107,7 @@ mkdir -p build
 cd build
 cmake \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_INSTALL_PREFIX="$PRECICE_ROOT" \
+  -DCMAKE_INSTALL_PREFIX="$PRECICE_INSTALL_DIR" \
   -DPRECICE_FEATURE_MPI_COMMUNICATION=ON \
   -DPRECICE_FEATURE_PETSC_MAPPING=OFF \
   -DPRECICE_FEATURE_GINKGO_MAPPING=OFF \
@@ -116,7 +116,7 @@ cmake \
   ..
 make -j4
 make install
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 The example uses four parallel build jobs. Change \nolinkurl{4} to a
@@ -131,11 +131,11 @@ The remaining builds and every simulation terminal must be able to find
 this preCICE installation. Export the paths in the current terminal now:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
-export CMAKE_PREFIX_PATH="$PRECICE_ROOT${CMAKE_PREFIX_PATH:+:$CMAKE_PREFIX_PATH}"
-export PKG_CONFIG_PATH="$PRECICE_ROOT/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
-export LD_LIBRARY_PATH="$PRECICE_ROOT/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-\end{Verbatim}
+\begin{CourseCode}
+export CMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH:$PRECICE_INSTALL_DIR"
+export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$PRECICE_INSTALL_DIR/lib/pkgconfig"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$PRECICE_INSTALL_DIR/lib"
+\end{CourseCode}
 \end{minipage}
 
 These exports disappear when you close the terminal. Store them in
@@ -146,16 +146,16 @@ value assigned to \nolinkurl{COURSE_ROOT}, and then open a new terminal
 (or run \nolinkurl{source ~/.bashrc}):
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 # CFD-DEM course environment
 export COURSE_ROOT="/absolute/path/to/cfd-dem-course"
 export SETUPS_ROOT="$COURSE_ROOT/experimental-setups"
-export PRECICE_ROOT="$COURSE_ROOT/software/precice-install"
+export PRECICE_INSTALL_DIR="$COURSE_ROOT/software/precice-install"
 export MERCURYDPM_BUILD_DIR="$COURSE_ROOT/software/mercurydpm-dev/build"
-export CMAKE_PREFIX_PATH="$PRECICE_ROOT${CMAKE_PREFIX_PATH:+:$CMAKE_PREFIX_PATH}"
-export PKG_CONFIG_PATH="$PRECICE_ROOT/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
-export LD_LIBRARY_PATH="$PRECICE_ROOT/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-\end{Verbatim}
+export CMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH:$PRECICE_INSTALL_DIR"
+export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$PRECICE_INSTALL_DIR/lib/pkgconfig"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$PRECICE_INSTALL_DIR/lib"
+\end{CourseCode}
 \end{minipage}
 
 Add this block only once. If you use a shell other than Bash, put the
@@ -168,7 +168,7 @@ Extract MercuryDPM, configure it against that installation, and build
 the course executables:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 cd "$COURSE_ROOT/software"
 tar -xzf mercurydpm-dev.tar.gz
 cd mercurydpm-dev
@@ -176,13 +176,13 @@ mkdir -p build
 cd build
 cmake \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_PREFIX_PATH="$PRECICE_ROOT" \
+  -DCMAKE_PREFIX_PATH="$PRECICE_INSTALL_DIR" \
   -DMercuryDPM_PreCICE_COUPLING=ON \
   -DMercuryDPM_USE_OpenMP=ON \
   ..
 make -j4 \
   RayleighKothe ChannelTransport SettleFluidizedBed FluidizedBed MercuryCG
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 This creates every MercuryDPM executable needed by the three course
@@ -192,12 +192,12 @@ Finally, create and activate an isolated Python environment for the
 analytical participant:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 cd "$SETUPS_ROOT/01-rayleigh-kothe/fluid-analytical"
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 Activate this environment again whenever you open a new terminal for the
@@ -226,20 +226,20 @@ Open two terminals in this case. Start the analytical participant in the
 first:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 cd "$SETUPS_ROOT/01-rayleigh-kothe/fluid-analytical"
 source .venv/bin/activate
 ./run.sh
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 Start MercuryDPM in the second:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 cd "$SETUPS_ROOT/01-rayleigh-kothe/particles-mercurydpm"
 ./run.sh --build-dir="$MERCURYDPM_BUILD_DIR"
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 It is normal for the first participant to wait until the second one
@@ -268,7 +268,7 @@ First run the case with the supplied configuration. Then replace the
 using a compact polynomial C6 basis function:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 <mapping:rbf-pum-direct
   direction="read"
   from="Continuum-Mesh"
@@ -276,7 +276,7 @@ using a compact polynomial C6 basis function:
   project-to-input="false">
   <basis-function:compact-polynomial-c6 support-radius="2" />
 </mapping:rbf-pum-direct>
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 Clean and rerun both participants, then compare the initial and final
@@ -302,8 +302,8 @@ transport with particles tutorial}.
 Adapter}\label{02-channel-transport-particles__readmemd__step-1-compiling-software-openfoam-and-its-precice-adapter}
 
 This case reuses \nolinkurl{COURSE_ROOT}, \nolinkurl{SETUPS_ROOT},
-\nolinkurl{PRECICE_ROOT}, \nolinkurl{MERCURYDPM_BUILD_DIR}, and the
-preCICE search paths configured in case 1. Make sure that persistent
+\nolinkurl{PRECICE_INSTALL_DIR}, \nolinkurl{MERCURYDPM_BUILD_DIR}, and
+the preCICE search paths configured in case 1. Make sure that persistent
 environment is loaded in each new terminal.
 
 Keep the preCICE and MercuryDPM installations from case 1; its build
@@ -317,10 +317,10 @@ OpenFOAM v2512 package installation, the activation commands are
 typically:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 export OPENFOAM_BASHRC=/usr/lib/openfoam/openfoam2512/etc/bashrc
 source "$OPENFOAM_BASHRC"
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 Adjust only the assigned path for your installation, then use this same
@@ -334,13 +334,13 @@ Extract and compile the bundled adapter after both OpenFOAM and preCICE
 are available:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 cd "$COURSE_ROOT/software"
 tar -xzf openfoam-adapter-dev.tar.gz
 cd openfoam-adapter-dev
 ./Allwmake
 foamHasLibrary -verbose precice libpreciceAdapterFunctionObject
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 The final command should report that both libraries can be loaded. If
@@ -370,20 +370,20 @@ Case}\label{02-channel-transport-particles__readmemd__step-3-running-the-case}
 Activate OpenFOAM and start the fluid participant in the first terminal:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 source "$OPENFOAM_BASHRC"
 cd "$SETUPS_ROOT/02-channel-transport-particles/fluid-openfoam"
 ./run.sh
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 Start the particle participant in the second terminal:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 cd "$SETUPS_ROOT/02-channel-transport-particles/particles-mercurydpm"
 ./run.sh --build-dir="$MERCURYDPM_BUILD_DIR"
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 Use the participant-local \nolinkurl{clean.sh} scripts before repeating
@@ -404,10 +404,10 @@ that if you choose Nutils here, OpenFOAM is required for the
 fluidized-bed case in case 3.
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 cd "$SETUPS_ROOT/02-channel-transport-particles/fluid-nutils"
 ./run.sh
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 \subsection{Step 4: Inspecting the
@@ -452,14 +452,14 @@ Activate OpenFOAM, extract the custom solver, and compile it with
 \nolinkurl{wmake}:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 source "$OPENFOAM_BASHRC"
 cd "$COURSE_ROOT/software"
 tar -xzf openfoam-solver.tar.gz
 cd openfoam-solver
 wmake
 command -v AndersonJacksonFoam
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 The final command should locate \nolinkurl{AndersonJacksonFoam},
@@ -478,10 +478,10 @@ prepared settling restart archive.
 Before the first run, unpack the initial particle state:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 cd "$SETUPS_ROOT/03-link-fluidized-bed/particles-mercurydpm"
 tar -xzf settled-restart-file.tar.gz
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 The OpenFOAM adapter configuration is in
@@ -498,20 +498,20 @@ Case}\label{03-link-fluidized-bed__readmemd__step-3-running-the-case}
 Activate OpenFOAM and start the fluid participant in the first terminal:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 source "$OPENFOAM_BASHRC"
 cd "$SETUPS_ROOT/03-link-fluidized-bed/fluid-openfoam"
 ./run.sh
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 Start the MercuryDPM participant in the second terminal:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 cd "$SETUPS_ROOT/03-link-fluidized-bed/particles-mercurydpm"
 ./run.sh --build-dir="$MERCURYDPM_BUILD_DIR"
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 The particle launcher runs \nolinkurl{FluidizedBed} with six OpenMP
@@ -529,9 +529,9 @@ It needs MPI and \href{https://github.com/chr1shr/voro}{Voro++}. On
 Ubuntu, install the library and its development files with:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 sudo apt install voro++ voro++-dev
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 Alternatively, build Voro++ from source. The library must be compiled as
@@ -539,22 +539,22 @@ position-independent code so that LIGGGHTS can link it into its shared
 library:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 cd "$COURSE_ROOT/software"
 git clone https://github.com/chr1shr/voro.git
 cd voro
 mkdir -p build
 cd build
-export VORO_ROOT="$COURSE_ROOT/software/voro-install"
+export VORO_INSTALL_DIR="$COURSE_ROOT/software/voro-install"
 cmake \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-  -DCMAKE_INSTALL_PREFIX="$VORO_ROOT" \
+  -DCMAKE_INSTALL_PREFIX="$VORO_INSTALL_DIR" \
   ..
 make -j4
 make install
-export CMAKE_PREFIX_PATH="$VORO_ROOT${CMAKE_PREFIX_PATH:+:$CMAKE_PREFIX_PATH}"
-\end{Verbatim}
+export CMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH:$VORO_INSTALL_DIR"
+\end{CourseCode}
 \end{minipage}
 
 With Voro++ installed and preCICE discoverable in the current
@@ -562,15 +562,15 @@ environment, build LIGGGHTS from the bundle\textquotesingle s
 \nolinkurl{software/} directory:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 cd "$COURSE_ROOT/software"
 tar -xzf liggghts-dev.tar.gz
 cd liggghts-dev
 mkdir -p build
 cd build
-export LIGGGHTS_ROOT="$COURSE_ROOT/software/liggghts-install"
+export LIGGGHTS_INSTALL_DIR="$COURSE_ROOT/software/liggghts-install"
 cmake \
-  -DCMAKE_INSTALL_PREFIX="$LIGGGHTS_ROOT" \
+  -DCMAKE_INSTALL_PREFIX="$LIGGGHTS_INSTALL_DIR" \
   -DCMAKE_BUILD_TYPE=Release \
   -DENABLE_PRECICE=ON \
   -DENABLE_MODEL_HOOKE_STIFFNESS=ON \
@@ -584,25 +584,25 @@ cmake \
   ../src
 make -j4
 make install
-export PATH="$LIGGGHTS_ROOT/bin:$PATH"
-\end{Verbatim}
+export PATH="$LIGGGHTS_INSTALL_DIR/bin:$PATH"
+\end{CourseCode}
 \end{minipage}
 
 As in case 1, the optional Voro++ and LIGGGHTS exports must be set in
-every terminal that builds or runs LIGGGHTS. Add \nolinkurl{VORO_ROOT},
-\nolinkurl{LIGGGHTS_ROOT}, the updated \nolinkurl{CMAKE_PREFIX_PATH},
-and \nolinkurl{PATH} commands to \nolinkurl{~/.bashrc} if you want to
-keep them across terminals.
+every terminal that builds or runs LIGGGHTS. Add
+\nolinkurl{VORO_INSTALL_DIR}, \nolinkurl{LIGGGHTS_INSTALL_DIR}, the
+updated \nolinkurl{CMAKE_PREFIX_PATH}, and \nolinkurl{PATH} commands to
+\nolinkurl{~/.bashrc} if you want to keep them across terminals.
 
 Keep the OpenFOAM participant from Step 3. In the particle terminal, use
 the LIGGGHTS case instead:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 cd "$SETUPS_ROOT/03-link-fluidized-bed/particles-liggghts"
 tar -xzf settled-restart-file.tar.gz
 ./run.sh
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 This launches two MPI ranks using \nolinkurl{in.cfdem.liggghts}. The
@@ -636,25 +636,25 @@ To coarse-grain a completed MercuryDPM run, execute
 time interval if your run differs:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 cd "$SETUPS_ROOT/03-link-fluidized-bed"
 "$MERCURYDPM_BUILD_DIR/Drivers/MercuryCG/MercuryCG" FluidizedBed \
   -coordinates XY -x -0.075 0.075 -y 0.125 0.135 -ny 1 -nx 40 \
   -timeaverage -tmin 2.5 -tmax 6 -function Lucy -w 0.005 \
   -o postprocessing/mercury-1-5s-to-5s-w0-005-x40.dat
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 For LIGGGHTS, unpack the averaged raw data and convert it to the common
 profile format:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 cd "$SETUPS_ROOT/03-link-fluidized-bed/postprocessing"
 tar -xzf liggghts-averaged-data.tar.gz
 python3 process-liggghts-averaged-data.py \
   --file liggghts-results-1-5-to-5.dat --dx 0.00375 --dy 0.01
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 By default, the script uses the last available timestamp and writes its
@@ -667,13 +667,13 @@ Finally, compare both particle solvers with the Link et al. experimental
 data and Koch-Hill result:
 
 \noindent\begin{minipage}{\linewidth}
-\begin{Verbatim}[breaklines=true,breaksymbolleft={},breaksymbolright={},fontsize=\footnotesize]
+\begin{CourseCode}
 python3 plot-comparison-all.py \
   --ref Link2005.dat \
   --mercury mercury-1-5s-to-5s-w0-005-x40.dat \
   --liggghts liggghts-1-5s-to-5s-x40.csv \
   --pdf comparison-all.pdf
-\end{Verbatim}
+\end{CourseCode}
 \end{minipage}
 
 The generated MercuryDPM particle data can be large. The processed
